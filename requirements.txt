@@ -1,0 +1,11 @@
+flask
+PyPDF2
+nltk
+pandas
+opencv-python
+numpy
+tensorflow
+matplotlib
+scikit-image
+moviepy
+werkzeug
