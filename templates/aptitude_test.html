@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptitude Test</title>
+    <style>
+        body {
+            background-color: black;
+            color: aqua;
+            font-size: 25px;
+            text-align: center;
+        }
+        .question {
+            margin: 20px auto;
+            width: 60%;
+            padding: 10px;
+            border: 2px solid aqua;
+            background-color: #222;
+            text-align: left;
+        }
+        button {
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: aqua;
+            border: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h2>Aptitude Test for <span id="role"></span> at <span id="company"></span></h2>
+    <div id="questions"></div>
+    <button onclick="submitTest()">Submit Test</button>
+
+    <script>
+        // Get role and company from Flask
+        const role = "{{ role }}";
+        const company = "{{ company }}";
+
+        // Show role and company
+        document.getElementById("role").innerText = role;
+        document.getElementById("company").innerText = company;
+
+        // Question Bank
+        const questions = {
+            "Python Developer": [
+                { q: "What is the output of print(2 ** 3)?", options: ["6", "8", "9", "4"], a: "8" },
+                { q: "Which keyword is used for function declaration?", options: ["def", "func", "define", "fn"], a: "def" },
+                { q: "What data type is this: {'name': 'John'}?", options: ["list", "tuple", "dict", "set"], a: "dict" },
+                { q: "Which module is used for random numbers?", options: ["math", "random", "time", "os"], a: "random" },
+                { q: "Which Python version introduced type hints?", options: ["2.7", "3.5", "3.8", "3.9"], a: "3.5" },
+				{ q: "What is the output of print(len('Hello'))?", options: ["4", "5", "6", "None"], a: "5" },
+				{ q: "Which of the following is a mutable data type in Python?", options: ["tuple", "string", "list", "int"], a: "list" },
+				{ q: "What will print(10 // 3) output?", options: ["3.33", "3", "3.0", "Error"], a: "3" },
+				{ q: "Which statement is used to handle exceptions in Python?", options: ["catch", "try-except", "error", "handle"], a: "try-except" },
+				{ q: "What does pip stand for in Python?", options: ["Python Installation Package", "Pip Installs Python", "Pip Installs Packages", "Package Install Program"], a: "Pip Installs Packages" }
+
+            ],
+            "Java Developer": [
+                { q: "What is the default value of int in Java?", options: ["null", "1", "0", "undefined"], a: "0" },
+                { q: "What is JVM?", options: ["Java Virtual Machine", "Java Visual Model", "Java Variable Manager", "Java Version Module"], a: "Java Virtual Machine" },
+                { q: "Which keyword is used to create an object?", options: ["create", "make", "new", "instance"], a: "new" },
+                { q: "Which method is used to start a thread?", options: ["run()", "start()", "begin()", "execute()"], a: "start()" },
+                { q: "Which keyword is used for inheritance?", options: ["implements", "extends", "inherits", "uses"], a: "extends" },
+				{ q: "Which data type is used to store a single character in Java?", options: ["char", "string", "Character", "int"], a: "char" },
+				{ q: "What is the parent class of all Java classes?", options: ["Object", "Main", "Base", "Super"], a: "Object" },
+				{ q: "Which of the following is not a primitive data type in Java?", options: ["int", "boolean", "String", "float"], a: "String" },
+				{ q: "Which collection class allows storing key-value pairs?", options: ["ArrayList", "HashSet", "HashMap", "LinkedList"], a: "HashMap" },
+				{ q: "Which operator is used to compare two values in Java?", options: ["=", "==", "!=", "equals()"], a: "=="}  
+
+            ],
+            ".NET Developer": [
+                { q: "What does .NET stand for?", options: ["Network Enabled Technologies", "New Enterprise Technology", "Next Evolution Tech", "None"], a: "Network Enabled Technologies" },
+                { q: "What language is mainly used in .NET?", options: ["Java", "Python", "C#", "Ruby"], a: "C#" },
+                { q: "What is CLR in .NET?", options: ["Common Language Runtime", "Code Level Router", "Core Logic Renderer", "None"], a: "Common Language Runtime" },
+                { q: "What is ASP.NET used for?", options: ["Machine Learning", "Data Science", "Web Development", "Gaming"], a: "Web Development" },
+                { q: "What does LINQ stand for?", options: ["Language Integrated Query", "Logical Indexed Naming Query", "List Integration Query", "None"], a: "Language Integrated Query" },
+				{ q: "Which of the following is an immutable data type in Python?", options: ["list", "dict", "set", "tuple"], a: "tuple" },
+				{ q: "How do you start a comment in Python?", options: ["//", "#", "/*", "--"], a: "#" },
+				{ q: "Which built-in function returns the length of a list?", options: ["count()", "size()", "len()", "length()"], a: "len()" },
+				{ q: "What will `bool([])` return in Python?", options: ["True", "False", "None", "Error"], a: "False" },
+				{ q: "Which keyword is used to handle exceptions in Python?", options: ["catch", "handle", "except", "throw"], a: "except" }
+
+            ]
+        };
+
+        // Load questions based on role
+        let selectedQuestions = questions[role] || [];
+        let questionDiv = document.getElementById("questions");
+
+        selectedQuestions.forEach((item, index) => {
+            let optionsHtml = "";
+            item.options.forEach((option, i) => {
+                optionsHtml += `
+                    <label>
+                        <input type="radio" name="answer${index}" value="${option}"> ${option}
+                    </label><br>
+                `;
+            });
+
+            questionDiv.innerHTML += `
+                <div class="question">
+                    <p>${index + 1}. ${item.q}</p>
+                    ${optionsHtml}
+                </div>
+            `;
+        });
+
+        // Submit test
+        function submitTest() {
+			let score = 0;
+			selectedQuestions.forEach((item, index) => {
+				let selectedAnswer = document.querySelector(`input[name="answer${index}"]:checked`);
+				if (selectedAnswer && selectedAnswer.value === item.a) {
+					score++;
+				}
+			});
+
+			// Store the score using localStorage (to access in the next page)
+			localStorage.setItem("score", score);
+
+			// Send score to the backend for database storage
+			fetch("/save_score", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ role: role, company: company, score: score })
+			});
+
+			// Check if score is 6 or above
+			if (score >= 6) {
+				alert("You passed! Proceeding to the coding test.");
+				
+				// Get company and role values from localStorage or another source
+				const company = localStorage.getItem("company") || "Unknown Company";
+				const role = localStorage.getItem("role") || "Unknown Role";
+
+				// Redirect with company & role parameters
+				window.location.href = `/coding_test?company=${encodeURIComponent(company)}&role=${encodeURIComponent(role)}`;
+			} else {
+				alert("Your score is " + score + ". Please try again.");
+			}
+		}
+    </script>
+</body>
+</html>

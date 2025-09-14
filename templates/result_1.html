@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Result</title>
+    <style>
+        body { background-color: black; color: aqua; font-size: 25px; text-align: center; }
+        .result-container { margin: 20px auto; width: 60%; padding: 10px; border: 2px solid aqua; background-color: #222; text-align: left; }
+        .answer-box { font-size: 18px; padding: 10px; background-color: black; color: aqua; border: 1px solid aqua; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Test Result for <span id="role"></span> at <span id="company"></span></h2>
+    <div id="results"></div>
+    <button onclick="goHome()">Go to Home</button>
+
+    <script>
+        const role = localStorage.getItem("role") || "Unknown";
+        const company = localStorage.getItem("company") || "Unknown";
+
+        document.getElementById("role").innerText = role;
+        document.getElementById("company").innerText = company;
+
+        let answers = JSON.parse(localStorage.getItem("codingAnswers")) || [];
+        let resultDiv = document.getElementById("results");
+
+        answers.forEach((item, index) => {
+            let answerHTML = `
+                <div class="result-container">
+                    <p><strong>Q${index + 1}: ${item.question}</strong></p>
+                    <div class="answer-box">${item.answer || "No answer provided"}</div>
+                </div>
+            `;
+            resultDiv.innerHTML += answerHTML;
+        });
+
+        function goHome() {
+            window.location.href = "/";
+        }
+    </script>
+</body>
+</html>

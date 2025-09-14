@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Test</title>
+    <style>
+        body { background-color: black; color: aqua; font-size: 25px; text-align: center; }
+        .question-container { margin: 20px auto; width: 60%; padding: 10px; border: 2px solid aqua; background-color: #222; text-align: left; }
+        .question { font-size: 20px; margin-bottom: 10px; }
+        textarea { width: 95%; height: 120px; font-size: 18px; margin-top: 10px; padding: 10px; background-color: black; color: aqua; border: 1px solid aqua; resize: vertical; }
+        button { padding: 12px; font-size: 18px; margin-top: 20px; cursor: pointer; background-color: aqua; border: none; color: black; }
+    </style>
+</head>
+<body>
+    <h2>Coding Test for <span id="role"></span> at <span id="company"></span></h2>
+    <div id="questions"></div>
+    <button onclick="submitCodingTest()">Submit Code</button>
+
+    <script>
+        // Get role & company from Flask variables
+        const role = "{{ role|safe }}";
+        const company = "{{ company|safe }}";
+
+        document.getElementById("role").innerText = role;
+        document.getElementById("company").innerText = company;
+
+        // Define questions based on role
+        const codingQuestions = {
+            "Python Developer": [
+                { q: "Write a Python function to check if a number is prime.", keywords: ["def", "prime", "return", "for", "if"] },
+                { q: "Write a Python program to reverse a string without built-in functions.", keywords: ["def", "reverse", "string", "for", "return"] }
+            ],
+            "Java Developer": [
+                { q: "Write a Java function to check if a number is even or odd.", keywords: ["public", "static", "int", "even", "if"] },
+                { q: "Write a Java program to find the factorial of a number using recursion.", keywords: ["public", "static", "factorial", "return", "recursion"] }
+            ],
+            ".NET Developer": [
+                { q: "Write a C# function to find the largest number in an array.", keywords: ["public", "int", "array", "largest", "return"] },
+                { q: "Write a C# program to print Fibonacci series up to 10 terms.", keywords: ["public", "void", "Fibonacci", "for", "Console.WriteLine"] }
+            ]
+        };
+
+        let selectedQuestions = codingQuestions[role] || [];
+        let questionDiv = document.getElementById("questions");
+
+        selectedQuestions.forEach((item, index) => {
+            questionDiv.innerHTML += `
+                <div class="question-container">
+                    <p>${index + 1}. ${item.q}</p>
+                    <textarea id="answer${index}" placeholder="Write your code here..."></textarea>
+                </div>
+            `;
+        });
+
+        function checkKeywordMatch(answer, expectedKeywords) {
+            let words = answer.toLowerCase().split(/\s+/);
+            let matchCount = words.filter(word => expectedKeywords.map(w => w.toLowerCase()).includes(word)).length;
+            return (matchCount / expectedKeywords.length) * 100;
+        }
+
+        function submitCodingTest() {
+            let totalMatch = 0;
+            let answers = [];
+
+            selectedQuestions.forEach((item, index) => {
+                let answer = document.getElementById(`answer${index}`).value.trim();
+                let matchPercent = checkKeywordMatch(answer, item.keywords);
+                totalMatch += matchPercent;
+                answers.push({ question: item.q, answer: answer, match: matchPercent });
+            });
+
+            let avgMatch = totalMatch / selectedQuestions.length;
+
+            // Save answers (Optional: Send to backend instead of localStorage)
+            sessionStorage.setItem("codingAnswers", JSON.stringify(answers));
+
+            if (avgMatch >= 50) {
+                alert(`✅ Your answers match ${avgMatch.toFixed(2)}%. Proceeding to Next Page.`);
+                window.location.href = "/data";
+            } else {
+                alert(`❌ Your answers match ${avgMatch.toFixed(2)}%. Please try again.`);
+            }
+        }
+    </script>
+</body>
+</html>

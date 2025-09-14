@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Simple Registration and Login</title>
+</head>
+<body style="background-color: black; font-size: 25px;">
+<Center><h2 style="color: aqua;font-size: 35px;" >Skill Based Quiz</h2></Center>
+  <hr>  
+<Center><h2 style="color: aqua;font-size: 32px;" > Admin Registration</h2></Center>
+
+
+<center>
+<div style="border: 3px aquamarine solid; width: max-content;">
+
+    <form action="/register_admin" method="post">
+        <table>
+        <tr>    
+        <td><label style="color: aqua;" for="reg_username">Username:</label></td>
+        <td><input style="color: black;background-color: aqua;" type="text" id="reg_username" name="username" required></td>
+        </tr>
+        <tr>
+		<td><label style="color: aqua;" for="reg_username" for="reg_username">Mail:</label></td>
+        <td><input style="color: black;background-color: aqua;" type="text" id="reg_username" name="mail" required></td>
+        </tr>
+        <tr>
+        <td><label style="color: aqua;" for="reg_password">Password:</label></td>
+        <td><input style="color: black;background-color: aqua;" type="password" id="reg_password" name="pass" required></td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+        <td>  <input style="background-color: aqua; color: black; font-weight: 500; font-size: 28px;" type="submit" value="Register">
+        </td>
+        </tr>
+        </table>
+    </form>
+</div>
+</center>
+
+
+<br><br>
+<center>
+
+<h2 style="color: aqua;font-size: 32px;">Admin Login</h2>
+<div style="border: 3px aquamarine solid; width: max-content;">
+   
+<br>
+    <form action="/login_admin" method="post">
+        <table>
+        <tr>
+        <td><label style="color: aqua;" for="login_username">Mail ID:</label></td>
+        <td><input style="color: black;background-color: aqua;" type="text" id="login_username" name="userid" required></td>
+        </tr>
+        <tr>
+        <td><label style="color: aqua;" for="login_password">Password:</label></td>
+        <td><input style="color: black;background-color: aqua;" type="password" id="login_password" name="pass" required></td>
+        </tr>
+        <tr><td></td></tr>
+        <tr><td><input style="background-color: aqua; color: black; font-weight: 500; font-size: 28px;" type="submit" value="Login"></td>
+        </tr>
+    </table>
+    </form>
+</div>
+</center>
+<br><br>
+
+	<a style="background-color: aqua; color: black; font-weight: 500; font-size: 28px;" href = '/index'>Back</a>
+
+</body>
+</html>

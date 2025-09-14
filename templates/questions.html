@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Quiz application</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{{url_for('static', filename='assets/img/favicon.png')}}" rel="icon">
+  <link href="{{url_for('static', filename='assets/img/apple-touch-icon.png')}}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{url_for('static', filename='assets/vendor/aos/aos.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='assets/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='assets/vendor/boxicons/css/boxicons.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='assets/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{url_for('static', filename='assets/css/style.css')}}" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Regna
+  * Updated: Sep 18 2023 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/regna-bootstrap-onepage-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top d-flex align-items-center header-transparent">
+    <div class="container d-flex justify-content-between align-items-center">
+
+      <div id="logo">
+        <a href="{{ url_for('index') }}"><p style="font-weight: 800;color: white;font-size: 28px; margin-left: -250px;">SKILLER</p></a>
+        <!-- Uncomment below if you prefer to use a text logo -->
+        <!--<h1><a href="index.html">Regna</a></h1>-->
+      </div>
+
+      <nav id="navbar" class="navbar">
+        
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+    </div>
+  </header><!-- End Header -->
+
+<!-- Inside your HTML template -->
+<section id="hero">
+    <div class="hero-container" data-aos="zoom-in" data-aos-delay="100">
+        <form id="quizForm" action="/uploads" method="post">
+            <h3 style="color: #ffffff; font-weight: bolder; font-size: 35px;">Quiz Questions:</h3>
+            <ol>
+                {% for question in questions %}
+                    <li id="question{{ loop.index }}" class="question" style="display: none; color:#94e9ceed; font-size: 25px;">{{ question }}</li>
+                {% endfor %}
+            </ol>
+            <button type="button" onclick="showNextQuestion()">Next</button>
+            <button type="submit" value = "submit">Submit</button>
+        </form>
+    </div>
+</section>
+<script>
+	let mediaRecorder;
+	let recordedChunks = [];
+	let mediaStream;
+	let currentQuestionIndex =1;
+	let videoCounter = 1; // Counter for naming the videos
+	
+	
+	
+
+	document.addEventListener('DOMContentLoaded', function () {
+		
+			document.getElementById('question' + currentQuestionIndex).style.display = 'block';
+
+			// Start recording for the new question
+			startRecording();	
+			
+	});
+
+	function startRecording() {
+		navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+			.then(function (stream) {
+				// Initialize mediaRecorder
+				initializeMediaRecorder(stream);
+			})
+			
+			.catch(function (error) {
+				console.error('Error accessing media devices:', error);
+			});
+	}
+
+	function initializeMediaRecorder(stream) {
+		mediaRecorder = new MediaRecorder(stream);
+		mediaStream = stream;
+
+		mediaRecorder.ondataavailable = function (event) {
+			// Save chunks of recorded data
+			saveRecordedChunks(event.data);
+		};
+
+		mediaRecorder.onstop = function () {
+			// Create a blob from recorded chunks
+			let blob = new Blob(recordedChunks, { type: 'video/webm' });
+			let url = URL.createObjectURL(blob);
+			console.log(url);
+
+			// Save the recorded video to the static folder
+			saveVideo(blob, videoCounter);
+
+			// Increment the video counter
+			videoCounter++;
+
+			// Clear recordedChunks for the next question
+			clearRecordedChunks();
+		};
+
+		mediaRecorder.start();
+	}
+
+	function saveRecordedChunks(data) {
+		if (data.size > 0) {
+			recordedChunks.push(data);
+		}
+	}
+
+	function stopRecording() {
+		mediaRecorder.stop();
+		mediaStream.getTracks().forEach(track => track.stop());
+	}
+
+	function saveVideo(blob, counter) {
+		let formData = new FormData();
+		formData.append('video', blob, `recorded_video_${counter}.webm`);
+
+		// Send the video data to the server
+		fetch('/save_video', {
+			method: 'POST',
+			body: formData
+		})
+			.then(response => {
+				if (response.ok) {
+					console.log(`Video ${counter} saved successfully on the server`);
+				} else {
+					console.error(`Failed to save video ${counter} on the server`);
+				}
+			})
+			.catch(error => console.error(`Error during saving video ${counter} on the server:`, error));
+	}
+
+	function clearRecordedChunks() {
+		recordedChunks = [];
+	}
+
+	function showNextQuestion() {
+    // Stop recording for the current question
+		stopRecording();
+
+		currentQuestionIndex++;
+		
+
+		// Check if there are more questions
+		if (currentQuestionIndex < {{ questions | length }}) {
+        // Display the next question
+			document.getElementById('question' + currentQuestionIndex).style.display = 'block';
+
+			// Start recording for the new question
+			startRecording();
+		} else {
+			// All questions displayed, submit the form
+			document.getElementById('quizForm').submit();
+		}
+	}
+
+	
+
+</script>
+
+
+
+   
+  <!-- ======= Footer ======= -->
+  <footer id="footer">
+    <div class="footer-top">
+      <div class="container">
+
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="copyright">
+        &copy; Copyright <strong>Skiller</strong>. All Rights Reserved
+      </div>
+      <div class="credits">
+        <!--
+        All the links in the footer should remain intact.
+        You can delete the links only if you purchased the pro version.
+        Licensing information: https://bootstrapmade.com/license/
+        Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=Regna
+      -->
+        Designed by <a href="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmQ3djhzODJyOWpid2VhODJ5bmcwNGF5MjRpbHJ6enZ5MWpxbmxmaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oEdvbpl0X32bXD2Vi/giphy.gif">Someone from india</a>
+      </div>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{url_for('static', filename='assets/vendor/purecounter/purecounter_vanilla.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/vendor/aos/aos.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/vendor/glightbox/js/glightbox.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.js')}}"></script>
+  <script src="{{url_for('static', filename='assets/vendor/php-email-form/validate.js')}}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{url_for('static', filename='assets/js/main.js')}}"></script>
+
+
+</html>

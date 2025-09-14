@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Question</title>
+</head>
+<body style="background-color: black; font-size: 35px;">
+    <center><h2 style="color: aqua;font-size: 45px;">Add Question</h2></center>
+    <br>
+    <center>
+    <form action="/add" method="post">
+
+        <table>
+        <tr>    
+        <td><label style="color: aqua;" for="reg_username">Question:</label></td>
+        <td><input style="color: black;background-color: aqua;font-size: 35px;" type="text" id="reg_username" name="ques" required></td>
+        </tr>
+        
+        <tr>
+        <td><label style="color: aqua;" for="reg_username">Answer:</label></td>
+        <td><input style="color: black;background-color: aqua;font-size: 35px;" type="text" id="reg_username" name="ans" required></td>
+        </tr>
+        
+        <tr>
+        <td><label style="color: aqua;" for="language">Language</label></td>
+        <td><input style="color: black;background-color: aqua;font-size: 35px;" type="text" id="reg_username" name="language" required></td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+        <td>    
+        <input style="background-color: aqua; color: black; font-weight: 500; font-size: 28px;" type="submit" value="Submit">
+        </td>
+    </tr>
+    </table>
+    </form>
+
+    </center>
+	<br><br>
+	<a style="background-color: aqua; color: black; font-weight: 500; font-size: 28px;" href = '/admin'>Admin</a>
+</body>
+</html>

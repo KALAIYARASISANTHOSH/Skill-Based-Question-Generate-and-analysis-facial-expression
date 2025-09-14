@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Home - Job Vacancies</title>
+    <style>
+        body {
+            background-color: black;
+            color: aqua;
+            font-size: 20px;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border: 2px aqua solid;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid aqua;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Available Job Vacancies</h2>
+    
+    <table>
+        <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Location</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+        {% for vacancy in vacancies %}
+        <tr>
+            <td>{{ vacancy[0] }}</td>
+            <td>{{ vacancy[1] }}</td>
+            <td>{{ vacancy[2] }}</td>
+            <td>{{ vacancy[3] }}</td>
+            <td>
+                <a href="/aptitude_test?company={{ vacancy[0] }}&role={{ vacancy[1] }}">
+                    <button>Start Aptitude Test</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
